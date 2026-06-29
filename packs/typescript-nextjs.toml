@@ -1,0 +1,21 @@
+name = "typescript-nextjs"
+description = "Next.js App Router, Auth.js, Prisma, Stripe"
+language = "TypeScript"
+
+[[repos]]
+url = "https://github.com/vercel/next.js"
+stars = 120000
+license = "MIT"
+reason = "Primary Next.js framework source"
+
+[[repos]]
+url = "https://github.com/nextauthjs/next-auth"
+stars = 26000
+license = "ISC"
+reason = "Auth.js authentication patterns"
+
+[[repos]]
+url = "https://github.com/prisma/prisma"
+stars = 38000
+license = "Apache-2.0"
+reason = "Prisma ORM and generated client patterns"

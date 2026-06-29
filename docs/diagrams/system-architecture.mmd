@@ -1,0 +1,18 @@
+flowchart TD
+    A[GitHub and Local Repos] --> B[Validation and Metadata]
+    B --> C[Deterministic Extraction]
+    C --> D[Knowledge Compiler]
+    D --> E[SQLite Metadata Store]
+    D --> F[SQLite FTS5 Index]
+    D --> G[Local Vector Index]
+    D --> H[Graph Tables]
+    E --> I[Retrieval Planner]
+    F --> I
+    G --> I
+    H --> I
+    I --> J[Context Pack Generator]
+    J --> K[CLI]
+    J --> L[HTTP API]
+    J --> M[MCP Server]
+    J --> N[Reflexion and Staging]
+    N --> D

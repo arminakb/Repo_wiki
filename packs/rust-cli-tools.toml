@@ -1,0 +1,21 @@
+name = "rust-cli-tools"
+description = "clap, tokio, anyhow, serde, cargo-nextest"
+language = "Rust"
+
+[[repos]]
+url = "https://github.com/clap-rs/clap"
+stars = 15000
+license = "MIT"
+reason = "CLI argument parsing patterns"
+
+[[repos]]
+url = "https://github.com/tokio-rs/tokio"
+stars = 29000
+license = "MIT"
+reason = "Async runtime patterns"
+
+[[repos]]
+url = "https://github.com/nextest-rs/nextest"
+stars = 5000
+license = "Apache-2.0"
+reason = "Rust test runner patterns"

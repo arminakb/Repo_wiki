@@ -1,0 +1,404 @@
+[
+  {
+    "repo_name": "Dapr Agents",
+    "agent_name": "Codex CLI current agent",
+    "url_or_path": "https://github.com/dapr/dapr-agents",
+    "language_framework": "Python / Dapr workflows, Python agents",
+    "task": "Add validation for WorkflowGrpcOptions keepalive options so keepalive_timeout_ms cannot be greater than keepalive_time_ms, and add a focused unit test in tests/workflow/test_grpc_options.py.",
+    "implementation_allowed": true,
+    "baseline": {
+      "files_inspected": [
+        "dapr_agents/agents/configs.py",
+        "tests/workflow/test_grpc_options.py",
+        "dapr_agents/workflow/utils/grpc.py",
+        "pyproject.toml"
+      ],
+      "files_changed": [
+        "dapr_agents/agents/configs.py",
+        "tests/workflow/test_grpc_options.py"
+      ],
+      "implementation_plan": "Add a __post_init__ invariant after existing positive-value checks, then add one pytest case covering timeout > keepalive time.",
+      "tests_identified": [
+        "uv run pytest tests/workflow/test_grpc_options.py::test_keepalive_timeout_ms_cannot_exceed_time"
+      ],
+      "tests_run": [
+        "pytest command was blocked by missing uv/pytest in the environment",
+        "git diff captured in patches/dapr-agents-baseline.patch"
+      ],
+      "test_result": "Focused pytest could not be run because uv/pytest were unavailable; patch diff is minimal and syntactically straightforward.",
+      "confidence": 8,
+      "score": 8.0,
+      "notes": "No saved final child-agent output was available, so this record is based on the isolated diff and transcript handoff."
+    },
+    "assisted": {
+      "ingestion_command": "Precomputed context pack used; original ingestion command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli ingest local /tmp/repo-wiki-coding-ab-benchmark/repos/dapr-agents/assisted --license-policy permissive_only",
+      "retrieval_command": "Precomputed context pack used; original retrieval command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli retrieve \"Add validation for WorkflowGrpcOptions keepalive options so keepalive_timeout_ms cannot be greater than keepalive_time_ms, and add a focused unit test in tests/workflow/test_grpc_options.py.\" --repo repo_a12916253262216fa8fb --limit 10 --max-tokens 5000 --format json --license-policy permissive_only --language Python --framework \"Dapr workflows\"",
+      "context_pack_id": "ctx_56f6e5dfdb614335",
+      "retrieval_latency_ms": null,
+      "top_retrieved_files": [
+        "dapr_agents/agents/configs.py",
+        "dapr_agents/workflow/utils/grpc.py",
+        "dapr_agents/types/workflow.py"
+      ],
+      "citations_present": true,
+      "files_inspected": [
+        "dapr_agents/agents/configs.py",
+        "tests/workflow/test_grpc_options.py",
+        "dapr_agents/workflow/utils/grpc.py",
+        "dapr_agents/agents/durable.py",
+        "dapr_agents/agents/base.py",
+        "dapr_agents/agents/components.py",
+        "pyproject.toml"
+      ],
+      "files_changed": [
+        "dapr_agents/agents/configs.py",
+        "tests/workflow/test_grpc_options.py"
+      ],
+      "implementation_plan": "Use the context pack to confirm WorkflowGrpcOptions, inspect the source and existing tests, add the cross-field guard, and run focused pytest if available.",
+      "tests_identified": [
+        "uv run pytest tests/workflow/test_grpc_options.py::test_keepalive_timeout_cannot_exceed_time"
+      ],
+      "tests_run": [
+        "uv run pytest tests/workflow/test_grpc_options.py::test_keepalive_timeout_cannot_exceed_time",
+        "python3 -m pytest tests/workflow/test_grpc_options.py::test_keepalive_timeout_cannot_exceed_time",
+        "python3 -m py_compile dapr_agents/agents/configs.py tests/workflow/test_grpc_options.py",
+        "git diff --check",
+        "direct module-load guard check"
+      ],
+      "test_result": "uv and pytest unavailable; py_compile, git diff --check, and a direct guard check passed.",
+      "confidence": 8,
+      "score": 8.0,
+      "notes": "The context pack helped confirm the source file but did not identify the exact test file."
+    },
+    "comparison": {
+      "delta": 0.0,
+      "helped": false,
+      "main_benefit": "Identified dapr_agents/agents/configs.py as the source boundary.",
+      "main_failure": "Missed the exact focused test file and suggested unrelated runtime/type files as edit targets.",
+      "verdict": "repo-wiki made no meaningful difference"
+    }
+  },
+  {
+    "repo_name": "OpenScribe",
+    "agent_name": "Codex CLI current agent",
+    "url_or_path": "https://github.com/sammargolis/OpenScribe",
+    "language_framework": "TypeScript / Next.js, React, Turborepo-style packages",
+    "task": "Add validation to the transcription provider resolver so unknown TRANSCRIPTION_PROVIDER values throw a clear error instead of silently defaulting to whisper_local, and update packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts.",
+    "implementation_allowed": true,
+    "baseline": {
+      "files_inspected": [
+        "packages/pipeline/transcribe/src/providers/provider-resolver.ts",
+        "packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts",
+        "package.json",
+        "config/tsconfig.test.json",
+        "TRANSCRIPTION_PROVIDER usages"
+      ],
+      "files_changed": [
+        "packages/pipeline/transcribe/src/providers/provider-resolver.ts",
+        "packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts"
+      ],
+      "implementation_plan": "Inspect resolver aliases, add a negative provider assertion, and throw for unknown non-empty normalized provider values while preserving blank/default behavior.",
+      "tests_identified": [
+        "pnpm build:test",
+        "node --test build/tests-dist/pipeline/transcribe/src/__tests__/provider-resolver.test.js"
+      ],
+      "tests_run": [
+        "pnpm build:test",
+        "git diff --check"
+      ],
+      "test_result": "pnpm build:test blocked because pnpm was not installed; git diff --check passed.",
+      "confidence": 8,
+      "score": 8.2,
+      "notes": "Baseline error message listed canonical providers and supported aliases, including whisper-openai, openai, whisper, and med_asr."
+    },
+    "assisted": {
+      "ingestion_command": "Precomputed context pack used; original ingestion command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli ingest local /tmp/repo-wiki-coding-ab-benchmark/repos/openscribe/assisted --license-policy permissive_only",
+      "retrieval_command": "Precomputed context pack used; original retrieval command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli retrieve \"Add validation to the transcription provider resolver so unknown TRANSCRIPTION_PROVIDER values throw a clear error instead of silently defaulting to whisper_local, and update packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts.\" --repo repo_45dd0bb56e58b2b1b858 --limit 10 --max-tokens 5000 --format json --license-policy permissive_only --language TypeScript --framework \"Next.js\"",
+      "context_pack_id": "ctx_dadea24335b44f63",
+      "retrieval_latency_ms": null,
+      "top_retrieved_files": [
+        "packages/storage/src/server-api-keys.ts",
+        "apps/web/src/app/api/settings/api-keys/route.ts",
+        "packages/pipeline/shared/src/error.ts"
+      ],
+      "citations_present": true,
+      "files_inspected": [
+        "packages/pipeline/transcribe/src/providers/provider-resolver.ts",
+        "packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts",
+        "packages/pipeline/transcribe/src/index.ts",
+        "package.json",
+        "config/tsconfig.test.json",
+        "apps/web/src/app/api/transcription/segment/route.ts",
+        "apps/web/src/app/api/transcription/final/route.ts"
+      ],
+      "files_changed": [
+        "packages/pipeline/transcribe/src/providers/provider-resolver.ts",
+        "packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts"
+      ],
+      "implementation_plan": "Disregard unrelated context targets after inspection, search the transcribe package, add unknown-provider test, and throw for unsupported non-empty providers.",
+      "tests_identified": [
+        "pnpm build:test && node --test build/tests-dist/pipeline/transcribe/src/__tests__/provider-resolver.test.js",
+        "git diff --check"
+      ],
+      "tests_run": [
+        "git diff --check",
+        "pnpm build:test && node --test build/tests-dist/pipeline/transcribe/src/__tests__/provider-resolver.test.js"
+      ],
+      "test_result": "git diff --check passed; focused test command blocked by missing pnpm.",
+      "confidence": 8,
+      "score": 7.4,
+      "notes": "Patch is functional, but the error message lists canonical provider names only and uses the untrimmed env value in the message."
+    },
+    "comparison": {
+      "delta": -0.8,
+      "helped": false,
+      "main_benefit": "The context pack included the correct provider-resolver test as a related test.",
+      "main_failure": "Top edit targets were unrelated API-key/storage files, causing noisy discovery.",
+      "verdict": "repo-wiki hurt performance"
+    }
+  },
+  {
+    "repo_name": "VoltAgent",
+    "agent_name": "Codex CLI current agent",
+    "url_or_path": "https://github.com/voltagent/voltagent",
+    "language_framework": "TypeScript / TypeScript agent framework, Next.js examples",
+    "task": "Add validation to InMemoryLogBuffer so maxSize must be a positive integer, and add focused tests in packages/logger/src/buffer.spec.ts.",
+    "implementation_allowed": true,
+    "baseline": {
+      "files_inspected": [
+        "packages/logger/src/buffer.ts",
+        "packages/logger/src/buffer.spec.ts",
+        "packages/logger/package.json",
+        "packages/logger/vitest.config.mts",
+        "packages/logger/src/types.ts",
+        "packages/logger/src/providers/pino.ts",
+        "package.json",
+        "pnpm-workspace.yaml"
+      ],
+      "files_changed": [
+        "packages/logger/src/buffer.ts",
+        "packages/logger/src/buffer.spec.ts"
+      ],
+      "implementation_plan": "Add focused invalid-size constructor cases, then add a single Number.isInteger/maxSize > 0 guard.",
+      "tests_identified": [
+        "pnpm --filter @voltagent/logger test -- src/buffer.spec.ts --run"
+      ],
+      "tests_run": [
+        "pnpm --filter @voltagent/logger test -- src/buffer.spec.ts --run"
+      ],
+      "test_result": "Focused Vitest command blocked because pnpm was not installed and no local Vitest binary was present.",
+      "confidence": 8,
+      "score": 8.1,
+      "notes": "Patch rejects 0, negatives, floats, NaN, and Infinity while preserving defaults."
+    },
+    "assisted": {
+      "ingestion_command": "Precomputed context pack used; original ingestion command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli ingest local /tmp/repo-wiki-coding-ab-benchmark/repos/voltagent/assisted --license-policy permissive_only",
+      "retrieval_command": "Precomputed context pack used; original retrieval command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli retrieve \"Add validation to InMemoryLogBuffer so maxSize must be a positive integer, and add focused tests in packages/logger/src/buffer.spec.ts.\" --repo repo_a60d56a8a9dec6021052 --limit 10 --max-tokens 5000 --format json --license-policy permissive_only --language TypeScript --framework \"TypeScript agent framework\"",
+      "context_pack_id": "ctx_6424324d772c4a1a",
+      "retrieval_latency_ms": null,
+      "top_retrieved_files": [
+        "packages/logger/src/buffer.ts",
+        "packages/core/src/logger/console-logger.ts",
+        "packages/logger/src/index.ts"
+      ],
+      "citations_present": false,
+      "files_inspected": [
+        "packages/logger/src/buffer.ts",
+        "packages/logger/src/buffer.spec.ts",
+        "packages/logger/src/index.ts",
+        "packages/logger/package.json",
+        "package.json",
+        "packages/logger/project.json",
+        "related logger test references"
+      ],
+      "files_changed": [
+        "packages/logger/src/buffer.ts",
+        "packages/logger/src/buffer.spec.ts"
+      ],
+      "implementation_plan": "Use context to inspect buffer source/spec, add invalid maxSize tests, add constructor validation, and run focused logger tests.",
+      "tests_identified": [
+        "pnpm --filter @voltagent/logger test -- run src/buffer.spec.ts"
+      ],
+      "tests_run": [
+        "pnpm --filter @voltagent/logger test -- run src/buffer.spec.ts",
+        "git diff --check -- packages/logger/src/buffer.ts packages/logger/src/buffer.spec.ts"
+      ],
+      "test_result": "Focused Vitest command blocked by missing pnpm; git diff --check passed.",
+      "confidence": 8,
+      "score": 8.2,
+      "notes": "Implementation matches baseline behavior with a loop-based test instead of it.each."
+    },
+    "comparison": {
+      "delta": 0.1,
+      "helped": true,
+      "main_benefit": "Correctly ranked packages/logger/src/buffer.ts as the top source file and included the exact spec file in test suggestions.",
+      "main_failure": "Also ranked an unrelated core console logger as an edit target and produced no citations in the saved pack.",
+      "verdict": "repo-wiki slightly helped"
+    }
+  },
+  {
+    "repo_name": "OpenMAIC",
+    "agent_name": "Codex CLI current agent",
+    "url_or_path": "https://github.com/THU-MAIC/OpenMAIC",
+    "language_framework": "TypeScript / Next.js, multi-agent classroom workflows",
+    "task": "Extend the JSON repair parser to repair quoted numeric property fragments without a leading zero like \"opacity: .5\" and \"x: -.25\" without changing valid string content, and add focused tests in tests/generation/json-repair.test.ts.",
+    "implementation_allowed": true,
+    "baseline": {
+      "files_inspected": [
+        "package.json",
+        "vitest.config.ts",
+        "tsconfig.json",
+        "tests/setup-env.ts",
+        "tests/generation/json-repair.test.ts",
+        "lib/generation/json-repair.ts"
+      ],
+      "files_changed": [
+        "lib/generation/json-repair.ts",
+        "tests/generation/json-repair.test.ts"
+      ],
+      "implementation_plan": "Add a regression for leading-decimal numeric fragments, patch the existing repair regex, and normalize leading-dot numbers to legal JSON numbers.",
+      "tests_identified": [
+        "pnpm vitest run tests/generation/json-repair.test.ts"
+      ],
+      "tests_run": [
+        "pnpm vitest run tests/generation/json-repair.test.ts",
+        "node regex smoke check"
+      ],
+      "test_result": "Vitest blocked by missing pnpm/node_modules; direct Node regex smoke check passed.",
+      "confidence": 8,
+      "score": 8.0,
+      "notes": "Baseline initially risked invalid JSON but caught it with the smoke check and fixed normalization."
+    },
+    "assisted": {
+      "ingestion_command": "Precomputed context pack used; original ingestion command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli ingest local /tmp/repo-wiki-coding-ab-benchmark/repos/openmaic/assisted --license-policy permissive_only",
+      "retrieval_command": "Precomputed context pack used; original retrieval command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli retrieve \"Extend the JSON repair parser to repair quoted numeric property fragments without a leading zero like \"opacity: .5\" and \"x: -.25\" without changing valid string content, and add focused tests in tests/generation/json-repair.test.ts.\" --repo repo_5272845c8c97d05bac96 --limit 10 --max-tokens 5000 --format json --license-policy permissive_only --language TypeScript --framework \"Next.js\"",
+      "context_pack_id": "ctx_624b41a8fc024ac7",
+      "retrieval_latency_ms": null,
+      "top_retrieved_files": [
+        "packages/@openmaic/importer/src/import-pipeline/index.ts",
+        "packages/@openmaic/importer/scripts/transvert.ts",
+        "lib/export/html-parser/parser.ts",
+        "lib/generation/generation-pipeline.ts",
+        "lib/generation/action-parser.ts",
+        "lib/generation/outline-generator.ts",
+        "lib/generation/json-repair.ts"
+      ],
+      "citations_present": true,
+      "files_inspected": [
+        "lib/generation/json-repair.ts",
+        "tests/generation/json-repair.test.ts",
+        "package.json",
+        "vitest.config.ts",
+        "parser callers via rg"
+      ],
+      "files_changed": [
+        "lib/generation/json-repair.ts",
+        "tests/generation/json-repair.test.ts"
+      ],
+      "implementation_plan": "Inspect shared parser helper and callers, add leading-dot regression test, extend numeric regex, normalize repaired values, and run focused tests or smoke checks.",
+      "tests_identified": [
+        "tests/generation/json-repair.test.ts",
+        "pnpm vitest run tests/generation/json-repair.test.ts",
+        "npm test -- tests/generation/json-repair.test.ts"
+      ],
+      "tests_run": [
+        "pnpm vitest run tests/generation/json-repair.test.ts",
+        "npm test -- tests/generation/json-repair.test.ts",
+        "git diff --check",
+        "node -e regex smoke check"
+      ],
+      "test_result": "pnpm and vitest unavailable; git diff --check and targeted regex smoke check passed.",
+      "confidence": 7,
+      "score": 7.7,
+      "notes": "Correct patch, but slightly more verbose than baseline and context was noisy."
+    },
+    "comparison": {
+      "delta": -0.3,
+      "helped": false,
+      "main_benefit": "Context included the correct json-repair test and source as lower-ranked runtime risk.",
+      "main_failure": "Top edit targets were unrelated importer/html-parser files, so source discovery still required manual search.",
+      "verdict": "repo-wiki made no meaningful difference"
+    }
+  },
+  {
+    "repo_name": "LangGraph",
+    "agent_name": "Codex CLI current agent",
+    "url_or_path": "https://github.com/langchain-ai/langgraph",
+    "language_framework": "Python / LangGraph Python libraries",
+    "task": "Add validation to JsonPlusSerializer allowlist normalization so allowed_msgpack_modules entries must be classes or non-empty string tuples, and add focused tests in libs/checkpoint/tests/test_jsonplus.py.",
+    "implementation_allowed": true,
+    "baseline": {
+      "files_inspected": [
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py",
+        "libs/checkpoint/tests/test_jsonplus.py",
+        "libs/checkpoint/Makefile",
+        "pyproject.toml"
+      ],
+      "files_changed": [
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py",
+        "libs/checkpoint/tests/test_jsonplus.py"
+      ],
+      "implementation_plan": "Validate allowlist entries inside the shared normalizer, pass allowlist names for clearer errors, and add constructor plus with_msgpack_allowlist tests.",
+      "tests_identified": [
+        "make test TEST='tests/test_jsonplus.py -k \"msgpack_allowlist_rejects_invalid_entries or with_msgpack_allowlist_rejects_invalid_entries\"'"
+      ],
+      "tests_run": [
+        "make test focused command",
+        "python -m pytest focused command",
+        "python -m py_compile libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py libs/checkpoint/tests/test_jsonplus.py",
+        "git diff --check"
+      ],
+      "test_result": "make/pytest blocked by missing uv and pytest; py_compile and diff check passed in available environment.",
+      "confidence": 7,
+      "score": 8.0,
+      "notes": "Baseline test coverage is internally consistent for constructor invalid entries and with_msgpack_allowlist when base allowlist is None."
+    },
+    "assisted": {
+      "ingestion_command": "Precomputed context pack used; original ingestion command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli ingest local /tmp/repo-wiki-coding-ab-benchmark/repos/langgraph/assisted --license-policy permissive_only",
+      "retrieval_command": "Precomputed context pack used; original retrieval command not logged. CLI shape: REPO_WIKI_DATA_DIR=/tmp/repo-wiki-coding-ab-benchmark/data python3 -m repo_wiki.interfaces.cli retrieve \"Add validation to JsonPlusSerializer allowlist normalization so allowed_msgpack_modules entries must be classes or non-empty string tuples, and add focused tests in libs/checkpoint/tests/test_jsonplus.py.\" --repo repo_cd0b1984375fdedde95b --limit 10 --max-tokens 5000 --format json --license-policy permissive_only --language Python --framework \"LangGraph Python libraries\"",
+      "context_pack_id": "ctx_1e0a643797f0437f",
+      "retrieval_latency_ms": null,
+      "top_retrieved_files": [
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py",
+        "libs/checkpoint-conformance/langgraph/checkpoint/conformance/validate.py",
+        "libs/prebuilt/langgraph/prebuilt/tool_validator.py"
+      ],
+      "citations_present": true,
+      "files_inspected": [
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py",
+        "libs/checkpoint/tests/test_jsonplus.py",
+        "libs/checkpoint/Makefile",
+        "normalizer call sites via rg"
+      ],
+      "files_changed": [
+        "libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py",
+        "libs/checkpoint/tests/test_jsonplus.py"
+      ],
+      "implementation_plan": "Use context to locate jsonplus.py, add invalid allowlist tests, add validation in _normalize_module_keys, then run focused make test/format/lint or static checks.",
+      "tests_identified": [
+        "make test TEST='tests/test_jsonplus.py -k \"msgpack_allowlist_rejects_invalid_entries or with_msgpack_allowlist_rejects_invalid_entries\"'",
+        "make format",
+        "make lint"
+      ],
+      "tests_run": [
+        "make test focused command",
+        "python -m pytest focused command",
+        "python -m py_compile libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py libs/checkpoint/tests/test_jsonplus.py",
+        "git diff --check",
+        "make format",
+        "make lint"
+      ],
+      "test_result": "make test/format/lint blocked by missing uv; python pytest/import dependencies unavailable; py_compile and diff check passed.",
+      "confidence": 6,
+      "score": 6.9,
+      "notes": "Source validation is mostly correct, but one added test loops over None and True even though the True branch returns self before validating extra entries."
+    },
+    "comparison": {
+      "delta": -1.1,
+      "helped": false,
+      "main_benefit": "Correctly ranked jsonplus.py as the primary edit target and identified validation convention examples.",
+      "main_failure": "Assisted patch added a test expectation for allowed_msgpack_modules=True that the implementation does not satisfy because with_msgpack_allowlist returns self before validating extras.",
+      "verdict": "repo-wiki hurt performance"
+    }
+  }
+]

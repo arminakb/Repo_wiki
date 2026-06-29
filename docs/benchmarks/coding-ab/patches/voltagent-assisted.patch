@@ -1,0 +1,33 @@
+diff --git a/packages/logger/src/buffer.spec.ts b/packages/logger/src/buffer.spec.ts
+index 0ef360e..1fe5530 100644
+--- a/packages/logger/src/buffer.spec.ts
++++ b/packages/logger/src/buffer.spec.ts
+@@ -19,6 +19,14 @@ describe("InMemoryLogBuffer", () => {
+       const customBuffer = new InMemoryLogBuffer(500);
+       expect(customBuffer.size()).toBe(0);
+     });
++
++    it("should reject max size values that are not positive integers", () => {
++      for (const maxSize of [0, -1, 1.5, Number.POSITIVE_INFINITY, Number.NaN]) {
++        expect(() => new InMemoryLogBuffer(maxSize)).toThrow(
++          "InMemoryLogBuffer maxSize must be a positive integer",
++        );
++      }
++    });
+   });
+
+   describe("add", () => {
+diff --git a/packages/logger/src/buffer.ts b/packages/logger/src/buffer.ts
+index e885188..6ec0e56 100644
+--- a/packages/logger/src/buffer.ts
++++ b/packages/logger/src/buffer.ts
+@@ -8,6 +8,10 @@ export class InMemoryLogBuffer implements LogBuffer {
+   private maxSize: number;
+
+   constructor(maxSize = 1000) {
++    if (!Number.isInteger(maxSize) || maxSize <= 0) {
++      throw new Error("InMemoryLogBuffer maxSize must be a positive integer");
++    }
++
+     this.maxSize = maxSize;
+   }

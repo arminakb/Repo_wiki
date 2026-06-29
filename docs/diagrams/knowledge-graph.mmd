@@ -1,0 +1,11 @@
+flowchart TD
+    Repo[Repository] -->|CONTAINS| File[SourceFile]
+    File -->|CONTAINS| Symbol[Symbol]
+    File -->|IMPORTS| Dependency[Dependency]
+    File -->|TESTED_BY| Test[TestCase]
+    Repo -->|USES_FRAMEWORK| Framework[Framework]
+    Pattern[ImplementationPattern] -->|DERIVED_FROM| File
+    Pattern -->|APPLIES_TO_FRAMEWORK| Framework
+    Pattern -->|HAS_CONSTRAINT| Constraint[Constraint]
+    Pattern -->|HAS_TRADEOFF| Tradeoff[Tradeoff]
+    Pattern -->|CONFLICTS_WITH| AntiPattern[AntiPattern]

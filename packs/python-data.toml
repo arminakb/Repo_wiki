@@ -1,0 +1,21 @@
+name = "python-data"
+description = "pandas, polars, duckdb, matplotlib, scikit-learn"
+language = "Python"
+
+[[repos]]
+url = "https://github.com/pandas-dev/pandas"
+stars = 46000
+license = "BSD-3-Clause"
+reason = "DataFrame API and testing patterns"
+
+[[repos]]
+url = "https://github.com/pola-rs/polars"
+stars = 35000
+license = "MIT"
+reason = "High-performance dataframe patterns"
+
+[[repos]]
+url = "https://github.com/duckdb/duckdb"
+stars = 25000
+license = "MIT"
+reason = "Embedded analytical database patterns"

@@ -1,0 +1,21 @@
+name = "python-ml-tools"
+description = "transformers, datasets, accelerate, peft"
+language = "Python"
+
+[[repos]]
+url = "https://github.com/huggingface/transformers"
+stars = 145000
+license = "Apache-2.0"
+reason = "Primary model API and pipeline examples"
+
+[[repos]]
+url = "https://github.com/huggingface/datasets"
+stars = 20000
+license = "Apache-2.0"
+reason = "Dataset loading and processing patterns"
+
+[[repos]]
+url = "https://github.com/huggingface/accelerate"
+stars = 9000
+license = "Apache-2.0"
+reason = "Distributed and local training orchestration"

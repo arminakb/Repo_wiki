@@ -1,0 +1,12 @@
+flowchart LR
+    A[Source Files] --> B[File Tree Metadata]
+    B --> C[Language Parsers]
+    C --> D[Symbols and Imports]
+    C --> E[Routes and Docs]
+    C --> F[Package Manifests]
+    D --> G[Source References]
+    E --> G
+    F --> G
+    G --> H[Knowledge Objects]
+    H --> I[Graph Nodes and Edges]
+    I --> J[Extraction Metrics]

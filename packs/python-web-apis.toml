@@ -1,0 +1,27 @@
+name = "python-web-apis"
+description = "FastAPI, httpx, SQLModel, Pydantic, pytest"
+language = "Python"
+
+[[repos]]
+url = "https://github.com/fastapi/fastapi"
+stars = 85000
+license = "MIT"
+reason = "Primary FastAPI framework source"
+
+[[repos]]
+url = "https://github.com/encode/httpx"
+stars = 14000
+license = "BSD-3-Clause"
+reason = "Async HTTP client commonly used with Python APIs"
+
+[[repos]]
+url = "https://github.com/fastapi/sqlmodel"
+stars = 16000
+license = "MIT"
+reason = "SQLModel patterns for FastAPI and SQLAlchemy"
+
+[[repos]]
+url = "https://github.com/pydantic/pydantic"
+stars = 23000
+license = "MIT"
+reason = "Validation model patterns used across Python APIs"

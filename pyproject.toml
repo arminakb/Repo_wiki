@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo-knowledge-compiler"
+version = "0.1.0"
+description = "Local-first repository knowledge compiler and retrieval engine for coding agents."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+repo-wiki = "repo_wiki.interfaces.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["repo_wiki*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["dataset/graphrag-main"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

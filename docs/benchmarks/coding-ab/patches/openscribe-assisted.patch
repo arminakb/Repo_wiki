@@ -1,0 +1,35 @@
+diff --git a/packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts b/packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts
+index 8c08814..92a2760 100644
+--- a/packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts
++++ b/packages/pipeline/transcribe/src/__tests__/provider-resolver.test.ts
+@@ -16,6 +16,13 @@ test("resolveTranscriptionProvider supports explicit provider aliases", () => {
+   assert.equal(resolveTranscriptionProvider({ TRANSCRIPTION_PROVIDER: "whisper_local" }).provider, "whisper_local")
+ })
+
++test("resolveTranscriptionProvider rejects unknown providers", () => {
++  assert.throws(
++    () => resolveTranscriptionProvider({ TRANSCRIPTION_PROVIDER: "not-real" }),
++    /Unsupported TRANSCRIPTION_PROVIDER "not-real"/,
++  )
++})
++
+ test("whisper local transcriber retries transient failures and returns text", async () => {
+   const waitCalls: number[] = []
+   let attempts = 0
+diff --git a/packages/pipeline/transcribe/src/providers/provider-resolver.ts b/packages/pipeline/transcribe/src/providers/provider-resolver.ts
+index c00f741..cfaa757 100644
+--- a/packages/pipeline/transcribe/src/providers/provider-resolver.ts
++++ b/packages/pipeline/transcribe/src/providers/provider-resolver.ts
+@@ -34,6 +34,12 @@ export function resolveTranscriptionProvider(env: NodeJS.ProcessEnv = process.en
+     }
+   }
+
++  if (provider && provider !== "whisper_local") {
++    throw new Error(
++      `Unsupported TRANSCRIPTION_PROVIDER "${env.TRANSCRIPTION_PROVIDER}". Expected one of: whisper_local, whisper_openai, medasr.`,
++    )
++  }
++
+   return {
+     provider: "whisper_local",
+     model: env.WHISPER_LOCAL_MODEL?.trim() || DEFAULT_WHISPER_LOCAL_MODEL,

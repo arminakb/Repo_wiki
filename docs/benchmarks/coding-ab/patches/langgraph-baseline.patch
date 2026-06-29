@@ -1,0 +1,128 @@
+diff --git a/libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py b/libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py
+index abd03f1..16b370f 100644
+--- a/libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py
++++ b/libs/checkpoint/langgraph/checkpoint/serde/jsonplus.py
+@@ -23,7 +23,7 @@ from ipaddress import (
+     IPv6Interface,
+     IPv6Network,
+ )
+-from typing import TYPE_CHECKING, Any, Literal, cast
++from typing import TYPE_CHECKING, Any, Literal
+ from uuid import UUID
+ from zoneinfo import ZoneInfo
+
+@@ -114,9 +114,11 @@ class JsonPlusSerializer(SerializerProtocol):
+                 allowed_msgpack_modules = True
+         self.pickle_fallback = pickle_fallback
+         self._allowed_json_modules: set[tuple[str, ...]] | Literal[True] | None = (
+-            _normalize_allowlist(allowed_json_modules)
++            _normalize_allowlist(allowed_json_modules, "allowed_json_modules")
++        )
++        self._allowed_msgpack_modules = _normalize_allowlist(
++            allowed_msgpack_modules, "allowed_msgpack_modules"
+         )
+-        self._allowed_msgpack_modules = _normalize_allowlist(allowed_msgpack_modules)
+
+         self._custom_unpack_ext_hook = __unpack_ext_hook__ is not None
+         self._unpack_ext_hook = (
+@@ -136,7 +138,9 @@ class JsonPlusSerializer(SerializerProtocol):
+             base_allowlist = set(base_allowlist)
+         else:
+             base_allowlist = set()
+-        extra = _normalize_module_keys(tuple(extra_allowlist))
++        extra = _normalize_module_keys(
++            tuple(extra_allowlist), "allowed_msgpack_modules"
++        )
+         merged = base_allowlist | extra
+         if merged == base_allowlist:
+             return self
+@@ -149,8 +153,12 @@ class JsonPlusSerializer(SerializerProtocol):
+             allowed_msgpack_modules = self._allowed_msgpack_modules
+
+         clone = copy.copy(self)
+-        clone._allowed_json_modules = _normalize_allowlist(self._allowed_json_modules)
+-        clone._allowed_msgpack_modules = _normalize_allowlist(allowed_msgpack_modules)
++        clone._allowed_json_modules = _normalize_allowlist(
++            self._allowed_json_modules, "allowed_json_modules"
++        )
++        clone._allowed_msgpack_modules = _normalize_allowlist(
++            allowed_msgpack_modules, "allowed_msgpack_modules"
++        )
+         if not clone._custom_unpack_ext_hook:
+             clone._unpack_ext_hook = _create_msgpack_ext_hook(
+                 clone._allowed_msgpack_modules
+@@ -862,22 +870,33 @@ def _msgpack_enc(data: Any) -> bytes:
+
+ def _normalize_allowlist(
+     allowlist: AllowedMsgpackModules | Literal[True] | None,
++    allowlist_name: str,
+ ) -> set[tuple[str, ...]] | Literal[True] | None:
+     if allowlist is True:
+         return allowlist
+     elif allowlist:
+-        return _normalize_module_keys(allowlist)
++        return _normalize_module_keys(allowlist, allowlist_name)
+     else:
+         return None
+
+
+ def _normalize_module_keys(
+     modules: AllowedMsgpackModules,
++    allowlist_name: str,
+ ) -> set[tuple[str, ...]]:
+     normalized: set[tuple[str, ...]] = set()
+     for module in modules:
+         if isclass(module):
+             normalized.add((module.__module__, module.__name__))
++        elif (
++            isinstance(module, tuple)
++            and module
++            and all(isinstance(part, str) and part for part in module)
++        ):
++            normalized.add(module)
+         else:
+-            normalized.add(cast(tuple[str, ...], module))
++            raise TypeError(
++                f"{allowlist_name} entries must be classes or "
++                "tuples of non-empty strings"
++            )
+     return normalized
+diff --git a/libs/checkpoint/tests/test_jsonplus.py b/libs/checkpoint/tests/test_jsonplus.py
+index b0999b0..0aa5585 100644
+--- a/libs/checkpoint/tests/test_jsonplus.py
++++ b/libs/checkpoint/tests/test_jsonplus.py
+@@ -1091,6 +1091,20 @@ def test_msgpack_path_constructor_still_works() -> None:
+     assert result == path_obj
+
+
++@pytest.mark.parametrize(
++    "entry",
++    [
++        "tests.test_jsonplus",
++        (),
++        ("tests.test_jsonplus", ""),
++        ("tests.test_jsonplus", 1),
++    ],
++)
++def test_msgpack_allowlist_rejects_invalid_entries(entry: object) -> None:
++    with pytest.raises(TypeError, match="allowed_msgpack_modules"):
++        JsonPlusSerializer(allowed_msgpack_modules=[entry])  # type: ignore[list-item]
++
++
+ def test_with_msgpack_allowlist_noop_returns_same_instance() -> None:
+     serde = JsonPlusSerializer(allowed_msgpack_modules=None)
+
+@@ -1136,6 +1150,13 @@ def test_with_msgpack_allowlist_preserves_custom_unpack_hook() -> None:
+     assert result._unpack_ext_hook is custom_hook
+
+
++def test_with_msgpack_allowlist_rejects_invalid_entries() -> None:
++    serde = JsonPlusSerializer(allowed_msgpack_modules=None)
++
++    with pytest.raises(TypeError, match="allowed_msgpack_modules"):
++        serde.with_msgpack_allowlist([("tests.test_jsonplus", "")])
++
++
+ @pytest.mark.skipif(sys.version_info >= (3, 14), reason="pydantic v1 not on 3.14+")
+ def test_msgpack_pydantic_v1_allowlist(caplog: pytest.LogCaptureFixture) -> None:
+     """Pydantic v1 models in allowlist should deserialize without warnings."""
