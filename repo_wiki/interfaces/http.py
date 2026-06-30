@@ -108,7 +108,7 @@ def create_app(settings: Settings | None = None, store: SQLiteStore | None = Non
     active_settings.ensure_dirs()
     active_store = store or SQLiteStore(active_settings.sqlite_path)
     active_store.initialize()
-    app = FastAPI(title="Repo Knowledge Compiler", version="0.1.0")
+    app = FastAPI(title="repo-wiki", version="0.1.0")
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -220,7 +220,7 @@ def serve(host: str, port: int, store: SQLiteStore | None = None) -> None:
         store_ref = active_store
 
     server = ThreadingHTTPServer((host, port), Handler)
-    print(f"Repo Knowledge Compiler API listening on http://{host}:{port}")
+    print(f"repo-wiki API listening on http://{host}:{port}")
     server.serve_forever()
 
 

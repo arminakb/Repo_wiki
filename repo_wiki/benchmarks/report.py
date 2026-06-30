@@ -230,7 +230,7 @@ def render_markdown(metrics: dict[str, Any], retrieval_results: list[dict[str, A
             "## Reproduce",
             "",
             "```bash",
-            "repo-wiki benchmark report --output docs/benchmarks/mvp-results.md",
+            "repo-wiki benchmark report --output reports/mvp-results.md",
             "```",
         ]
     )

@@ -238,7 +238,7 @@ def build_parser() -> argparse.ArgumentParser:
     benchmark_ingest.add_argument("--branch", default=None)
     benchmark_ingest.add_argument("--license-policy", default=None)
     benchmark_report = benchmark_sub.add_parser("report")
-    benchmark_report.add_argument("--output", default="docs/benchmarks/mvp-results.md")
+    benchmark_report.add_argument("--output", default="reports/mvp-results.md")
 
     api = sub.add_parser("api", help="Run the lightweight HTTP API")
     api_sub = api.add_subparsers(dest="api_command", required=True)

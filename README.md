@@ -1,134 +1,155 @@
 # repo-wiki
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-experimental-orange)
+repo-wiki is a local-first repository intelligence tool that helps AI coding agents understand real codebases before editing them.
 
-Local-first repository intelligence for coding agents: ingest real codebases, extract cited implementation knowledge, and generate compact context packs for AI coding workflows.
+Status: experimental v0.1 / portfolio project.
 
-## What is repo-wiki?
+## What It Does
 
-repo-wiki is an experimental retrieval and context-pack engine for coding agents. It indexes local or public repositories, extracts deterministic code intelligence, stores cited knowledge in SQLite, and returns compact task-specific context packs through CLI, HTTP, and MCP-compatible interfaces.
+repo-wiki indexes a local repository or public GitHub repository, extracts deterministic code and documentation signals, stores them in SQLite, and retrieves cited context packs for coding tasks.
 
-The project is a v0.1 research/engineering prototype, not a production system.
+It is designed to answer practical questions before an edit:
 
-## Why it exists
+- Which files are likely edit targets?
+- Which tests should be inspected or updated?
+- Which runtime paths, conventions, and risks are nearby?
+- What citations support the recommendation?
 
-Autonomous coding agents often waste time finding the right files, guessing test locations, or trusting noisy context. repo-wiki explores whether repository-specific, cited context packs can improve those workflows without sending an entire codebase to a model.
+## Why It Matters
 
-## Key features
+AI coding agents often fail because they start editing with shallow repository context. repo-wiki explores a smaller, local-first alternative to sending an entire codebase to a model: retrieve compact, cited, task-specific context first, then let the agent or developer inspect the evidence.
 
-- Local-first repository ingestion for local paths and public GitHub URLs.
-- Python, TypeScript, and JavaScript extraction.
-- Source, symbol, route, package, Markdown, test, and dependency metadata.
-- SQLite storage with FTS5, graph tables, retrieval traces, feedback, and context packs.
-- Deterministic local hash-vector scoring plus lexical retrieval and graph expansion.
-- Role-labeled context packs with source citations.
-- Stable `context_pack.v1` context-pack schema marker.
+## Key Features
+
+- Local and public GitHub repository ingestion.
+- Python, TypeScript, JavaScript, Markdown, package manifest, route, config, and test extraction.
+- SQLite storage with FTS-backed search, graph tables, retrieval traces, feedback, and context packs.
+- Hybrid retrieval using lexical search, deterministic local vector scoring, metadata filters, graph expansion, source/test pairing, and reranking.
+- Role-labeled context packs with file-level citations.
 - CLI, lightweight HTTP API, optional FastAPI app factory, and MCP-compatible stdio adapter.
-- Benchmark reports for retrieval quality, multi-repo retrieval, coding-agent A/B tests, and holdout checks.
+- Retrieval quality tests and benchmark summaries.
 
 ## Architecture
 
 ```text
 Repository
-   ↓
-Ingestion
-   ↓
-Source / docs / tests / configs extraction
-   ↓
-SQLite + FTS + vector scoring + graph tables
-   ↓
-Hybrid retrieval
-   ↓
-Role-labeled cited context pack
-   ↓
-Coding agent / developer
+  -> ingestion
+  -> source / docs / tests / config extraction
+  -> SQLite + FTS + local vector scoring + graph tables
+  -> hybrid retrieval and reranking
+  -> cited context_pack.v1
+  -> coding agent or developer
 ```
 
-See [docs/architecture.md](docs/architecture.md), [ARCHITECTURE.md](ARCHITECTURE.md), and [SAS.md](SAS.md) for more detail.
+repo-wiki is graph-enhanced, not graph-only. Graph relationships are used as one retrieval signal alongside lexical, metadata, vector, source/test, and citation signals.
+
+See [docs/architecture.md](docs/architecture.md) for more detail.
 
 ## Quickstart
 
 ```bash
-python3 -m pip install -e .
+git clone https://github.com/arminakb/Repo_wiki.git
+cd Repo_wiki
+
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .[dev]
+
 python3 -m repo_wiki.interfaces.cli init
 python3 -m repo_wiki.interfaces.cli ingest local .
-python3 -m repo_wiki.interfaces.cli query "where should I add validation for a new config option?"
+python3 -m repo_wiki.interfaces.cli query "add validation to a config model"
 ```
 
-If installed as a package, use the script form:
-
-```bash
-repo-wiki ingest local ./my-project
-repo-wiki retrieve "add parser behavior and tests"
-repo-wiki status
-repo-wiki doctor
-```
-
-## CLI examples
-
-```bash
-python3 -m repo_wiki.interfaces.cli bootstrap --list
-python3 -m repo_wiki.interfaces.cli ingest github https://github.com/example/project
-python3 -m repo_wiki.interfaces.cli knowledge list
-python3 -m repo_wiki.interfaces.cli graph neighbors <object_id>
-python3 -m repo_wiki.interfaces.cli feedback submit --context-pack <ctx_id> --accepted
-python3 -m repo_wiki.interfaces.cli benchmark report --output docs/benchmarks/mvp-results.md
-python3 -m repo_wiki.interfaces.cli api serve --host 127.0.0.1 --port 8000
-python3 -m repo_wiki.interfaces.cli mcp serve
-```
-
-## Verification
+Run the focused checks:
 
 ```bash
 python3 -m unittest tests.test_retrieval_quality -v
 python3 -m unittest tests.test_end_to_end -v
 python3 -m compileall repo_wiki
-python3 -m ruff check .
 ```
 
-## Benchmark results
+## CLI Examples
 
-Benchmarks are documented under [docs/benchmarks/](docs/benchmarks/), including the fixture-backed retrieval suite at `docs/benchmarks/retrieval-quality.md`. Claims here are intentionally limited to the runs recorded in the repository.
+Installed command form:
 
-Early benchmarks show that retrieval v0.1 can find useful implementation context across multiple repositories, including a 5-repository blind holdout with 4 pass / 1 partial / 0 fail.
+```bash
+repo-wiki init
+repo-wiki ingest local .
+repo-wiki ingest github https://github.com/example/project
+repo-wiki retrieve "add validation to a config model" --format json
+repo-wiki query "find the auth endpoint tests" --profile local_medium
+repo-wiki status
+repo-wiki doctor
+repo-wiki metrics
+repo-wiki repositories list
+repo-wiki knowledge list --limit 10
+repo-wiki graph neighbors <object_id>
+repo-wiki feedback list
+repo-wiki benchmark report --output reports/mvp-results.md
+```
 
-retrieval v0.1 blind holdout:
+Optional interfaces:
 
-- 5 new repositories.
-- 4 pass, 1 partial, 0 fail.
-- Average score: 7.8/10.
-- Top-10 expected hits: 12/15.
-- Citation coverage: 100%.
+```bash
+python3 -m repo_wiki.interfaces.cli api serve --host 127.0.0.1 --port 8000
+python3 -m repo_wiki.interfaces.cli mcp serve
+```
 
-Initial coding-agent A/B results were mixed; repo-wiki did not yet consistently improve coding outcomes. The project currently treats retrieval quality and coding-agent usefulness as separate evaluation targets.
+See [docs/examples.md](docs/examples.md) for HTTP and MCP examples.
 
-## Example use cases
+## Example Use Case
 
-- Ask a coding agent for a cited context pack before editing an unfamiliar repo.
-- Find likely source, runtime, test, and convention files for a bounded task.
-- Compare retrieval behavior across repositories before running implementation benchmarks.
-- Inspect repository structure through CLI, HTTP, or MCP-compatible tooling.
+Task:
 
-## Current limitations
+```text
+Add validation to a config model and update focused tests.
+```
 
-- v0.1 retrieval is heuristic and still fails on some generic or ambiguous tasks.
-- TypeScript/JavaScript parsing is lightweight compared with compiler-grade analysis.
-- Behavioral constraint extraction catches simple local guards, not full program semantics.
-- Coding-agent A/B results are early and mixed.
-- Benchmarks are local and bounded; they are not proof of production readiness.
-- No security review has been completed for production deployment.
+repo-wiki retrieves a context pack with likely source files, related tests, runtime/use-site files, convention examples, risks, and citations. A coding agent can inspect that pack before editing instead of starting from a broad repository search.
 
-## Roadmap
+## Benchmarks
 
-See [docs/roadmap.md](docs/roadmap.md).
+repo-wiki is evaluated with retrieval regression tests, a multi-repository retrieval benchmark, an initial coding-agent A/B benchmark, and a blind holdout retrieval benchmark.
 
-Near-term work focuses on retrieval-only regression checks, better source-to-test pairing, improved context-to-action planning, stronger MCP integration, and broader coding-agent A/B evaluation.
+Retrieval v0.1 showed promising early results on a 5-repository blind holdout: 4 pass, 1 partial, 0 fail, with 12/15 expected targets found in the top 10 and full citation coverage.
 
-## Project status
+Initial coding-agent A/B results were mixed, so repo-wiki currently treats retrieval quality and coding-agent improvement as separate evaluation targets.
 
-repo-wiki is an experimental v0.1 portfolio project. It is useful for demonstrating local-first repository intelligence, retrieval engineering, cited context packs, and benchmark discipline. It should not be presented as a proven production coding-agent system.
+See [docs/benchmarks.md](docs/benchmarks.md) for methodology, results, and limitations.
+
+## Current Status
+
+repo-wiki is an experimental v0.1 portfolio project. It is useful for demonstrating local-first repository indexing, deterministic extraction, retrieval engineering, cited context packs, and benchmark discipline.
+
+Implemented in v0.1:
+
+- Local and public GitHub ingestion.
+- SQLite schema initialization and local storage.
+- Source, docs, tests, symbols, routes, package manifests, configs, dependencies, and source references.
+- Hybrid retrieval and context-pack generation.
+- CLI, HTTP, and MCP-compatible stdio interfaces.
+- Feedback capture and staged knowledge promotion.
+- Focused retrieval quality tests.
+
+## Limitations
+
+- Not production-ready.
+- Retrieval is heuristic and can rank noisy files.
+- Coding-agent improvement is not proven.
+- Language support is limited.
+- TypeScript/JavaScript extraction is lightweight, not compiler-grade.
+- Large monorepos may need scoped ingestion.
+- Benchmark sample sizes are small.
+- MCP support is a lightweight JSON-RPC stdio adapter, not a full SDK-based server.
+
+## Next Steps
+
+- Improve source-to-test pairing and noisy-result suppression.
+- Broaden language support beyond the current Python/TypeScript/JavaScript focus.
+- Expand blind retrieval benchmarks.
+- Run larger coding-agent A/B evaluations.
+- Improve MCP integration and context-to-action planning.
+- Profile retrieval latency on larger repositories.
 
 ## License
 

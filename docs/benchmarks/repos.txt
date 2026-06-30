@@ -1,3 +1,0 @@
-# One public GitHub repository URL per line.
-# Example:
-# https://github.com/encode/starlette

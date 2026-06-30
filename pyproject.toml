@@ -3,7 +3,7 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "repo-knowledge-compiler"
+name = "repo-wiki"
 version = "0.1.0"
 description = "Local-first repository knowledge compiler and retrieval engine for coding agents."
 readme = "README.md"
@@ -24,7 +24,6 @@ include = ["repo_wiki*"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-exclude = ["dataset/graphrag-main"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,65 +1,39 @@
 # Contributing
 
-Repo Knowledge Compiler is designed for human and agent contributors.
-
-Read first:
-
-- `SAS.md`
-- `AGENT.md`
-- `ARCHITECTURE.md`
-- `ROADMAP.md`
-- `DECISIONS.md`
+repo-wiki is an experimental v0.1 portfolio project. Contributions should stay small, testable, and grounded in the current codebase.
 
 ## Development Workflow
 
-1. Pick a roadmap phase or issue.
-2. Read the relevant section of `SAS.md`.
-3. Make a focused change.
-4. Add or update tests.
-5. Update docs if behavior or architecture changes.
-6. Use a conventional commit message.
+1. Read `README.md`, `docs/architecture.md`, and the relevant source/tests.
+2. Make a focused change.
+3. Add or update tests when behavior changes.
+4. Update docs when public commands, architecture, or benchmark claims change.
+5. Run the focused checks before submitting.
+
+## Useful Checks
+
+```bash
+python3 -m unittest tests.test_retrieval_quality -v
+python3 -m unittest tests.test_end_to_end -v
+python3 -m compileall repo_wiki
+```
 
 ## Commit Messages
 
-Use:
+Use focused conventional commits:
 
 ```text
-feat(storage): implement sqlite metadata layer
-feat(parser): add python ast extraction pipeline
-feat(retrieval): add hybrid lexical retrieval
-feat(mcp): add retrieve_context tool
-docs(architecture): add retrieval planner design
-test(storage): cover repository snapshot persistence
+feat(retrieval): improve source-test pairing
+fix(storage): handle missing repository snapshots
+docs(readme): clarify v0.1 limitations
+test(retrieval): cover exact path ranking
 ```
 
-Avoid:
-
-```text
-fix
-update
-wip
-final
-test
-```
-
-## Architecture Changes
-
-If a change affects storage, retrieval, graph schema, API contracts, MCP tools, scaling strategy, or license/privacy policy, add or update an ADR in `docs/adr/`.
-
-## Testing Expectations
-
-Add tests for:
-
-- domain model validation.
-- storage writes.
-- parser output.
-- retrieval ranking.
-- context pack generation.
-- CLI/API/MCP contracts.
+Avoid vague messages like `fix`, `update`, `wip`, or `final`.
 
 ## Security Rules
 
 - Never execute indexed repository code.
 - Treat repository content as untrusted input.
-- Do not send private repository content to external LLMs unless explicitly configured.
+- Do not send private repository content to external services unless explicitly configured.
 - Preserve license and source citation metadata.

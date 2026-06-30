@@ -118,7 +118,7 @@ def handle_json_rpc(request: dict[str, Any], store: SQLiteStore) -> dict[str, An
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}, "resources": {}},
-                "serverInfo": {"name": "repo-knowledge-compiler", "version": "0.1.0"},
+                "serverInfo": {"name": "repo-wiki", "version": "0.1.0"},
             },
         }
     if method == "tools/list":

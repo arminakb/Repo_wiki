@@ -1,107 +1,71 @@
-# Architecture Overview
+# Architecture
 
-repo-wiki is a local-first repository intelligence engine for coding-agent workflows. Its job is to turn real repositories into cited, task-specific context packs that help an agent or developer find the right files before editing.
+repo-wiki is a local-first repository intelligence pipeline for coding-agent context retrieval.
+
+## System Flow
 
 ```text
-Repository
-   ↓
-Ingestion
-   ↓
-Source / docs / tests / configs extraction
-   ↓
-SQLite + FTS + vector scoring + graph tables
-   ↓
-Hybrid retrieval
-   ↓
-Role-labeled cited context pack
-   ↓
-Coding agent / developer
+Local path or GitHub URL
+  -> ingestion and license metadata
+  -> deterministic extraction
+  -> SQLite source, symbol, graph, and FTS tables
+  -> hybrid retrieval and reranking
+  -> cited context_pack.v1
+  -> CLI / HTTP / MCP-compatible stdio
 ```
 
-## System purpose
+## Main Components
 
-The system indexes repositories, extracts deterministic code facts, stores cited knowledge locally, and retrieves compact context for a specific coding task. It is graph-enhanced rather than graph-only: lexical search, local vector scoring, metadata filtering, graph relationships, and reranking all contribute to the final pack.
+- `repo_wiki/ingest/`: local and GitHub repository intake.
+- `repo_wiki/extract/`: file tree, Python, TypeScript/JavaScript, Markdown, route, and package extraction.
+- `repo_wiki/compile/`: source artifacts to typed knowledge objects.
+- `repo_wiki/storage/`: SQLite schema, FTS, graph tables, traces, context packs, feedback, and local vector scoring.
+- `repo_wiki/core/`: ingestion, retrieval, metrics, extraction, and feedback services.
+- `repo_wiki/retrieval/`: task classification, context assembly, quality gates, and reranking.
+- `repo_wiki/interfaces/`: CLI, lightweight HTTP API, optional FastAPI app factory, and MCP-compatible stdio adapter.
+- `tests/`: end-to-end and retrieval-quality regression tests.
 
-## Ingestion pipeline
-
-Ingestion accepts local paths and public GitHub URLs. It records repository metadata, source type, visibility, license policy, detected languages, frameworks, snapshots, file hashes, and extraction metrics.
-
-Generated folders, dependency folders, local repo-wiki state, caches, and configured excludes are skipped before extraction.
-
-## Extraction pipeline
-
-Extraction is deterministic and runs before any retrieval reasoning. It collects:
-
-- source files and line counts,
-- Python symbols and imports,
-- TypeScript/JavaScript imports, exports, functions, classes, and route-like files,
-- Markdown structure,
-- package manifests and dependencies,
-- tests and likely source/test relationships,
-- source references for citations.
-
-## Storage layer
-
-The v0.1 storage backend is SQLite:
-
-- metadata tables for repositories, snapshots, files, symbols, dependencies, and source refs,
-- knowledge objects with typed payloads,
-- graph nodes and edges,
-- SQLite FTS5 for lexical search,
-- deterministic local hash-vector scoring behind a replaceable interface,
-- retrieval traces, context packs, feedback, staged knowledge, and schema metadata.
-
-## Retrieval pipeline
+## Retrieval Pipeline
 
 ```text
 Task
-   ↓
-Task classification and entity extraction
-   ↓
-Lexical + source-file + vector candidates
-   ↓
-Graph expansion and source/test pairing
-   ↓
-Explainable reranking
-   ↓
-Citation filtering and context compression
-   ↓
-Context pack
+  -> classify task type and constraints
+  -> extract path and symbol hints
+  -> search source files and knowledge objects
+  -> apply repo/language/framework/license filters
+  -> add related tests and use-site files
+  -> expand bounded graph relationships
+  -> rerank with explainable signals
+  -> generate context_pack.v1 with citations
 ```
 
-Retrieval v0.1 prioritizes exact task entities, path/stem matches, related tests, and cited evidence. It also emits warnings when exact task entities are missing or when results look provisional.
+## Storage
 
-## Context-pack generation
+The project uses SQLite for v0.1:
 
-A context pack includes:
+- repository metadata,
+- source files and source references,
+- extracted symbols and dependencies,
+- knowledge objects,
+- graph nodes and edges,
+- FTS indexes,
+- retrieval traces,
+- context packs,
+- feedback and staged knowledge.
 
-- recommended patterns,
-- relevant examples,
-- architecture rules,
-- implementation steps,
-- tests to consider,
-- risks and low-quality warnings,
-- source citations,
-- short behavioral notes when local guards or early-return branches are detected.
+The local vector layer is deterministic and lightweight. It is useful for portfolio-scale experiments, but it is not a substitute for semantic embeddings in larger evaluations.
 
-The schema marker is `context_pack.v1`.
+## Interface Boundary
 
-## Interfaces
+The CLI, HTTP API, and MCP-compatible adapter call the same core services. Business logic lives in `repo_wiki/core/`, not in the interface adapters.
 
-All interfaces call the same core services:
+## Security And Safety
 
-- CLI through `repo_wiki.interfaces.cli`,
-- lightweight stdlib HTTP server plus optional FastAPI app factory,
-- MCP-compatible JSON-RPC stdio adapter.
+- Indexed repository code is treated as untrusted text.
+- repo-wiki does not execute indexed repository code.
+- Source references preserve license and snippet-policy metadata.
+- Local data is stored under `.repo-wiki/` by default and is ignored by git.
 
-## Benchmark and evaluation flow
+## Technical Interest
 
-Benchmark artifacts are documentation-first:
-
-1. choose fixed repositories and tasks,
-2. define expected source, test, runtime, or convention files before retrieval results are used,
-3. run ingestion and retrieval with a clean data directory,
-4. record top results, citations, warnings, latency, and expected-file hits,
-5. compare retrieval quality separately from coding-agent implementation quality.
-
-See [docs/benchmarks/README.md](benchmarks/README.md) for current results and limitations.
+repo-wiki combines deterministic static extraction, local-first storage, graph relationships, retrieval traces, role-labeled context packs, and benchmark feedback into one small system that can be inspected and run locally.

@@ -273,7 +273,7 @@ class EndToEndTest(unittest.TestCase):
         except RuntimeError as exc:
             self.assertIn("FastAPI is optional", str(exc))
         else:
-            self.assertEqual(app.title, "Repo Knowledge Compiler")
+            self.assertEqual(app.title, "repo-wiki")
 
     def test_default_excludes_skip_generated_repo_wiki_and_agent_dirs(self) -> None:
         self.assertTrue(should_skip_path(self.repo / ".repo-wiki" / "repo-wiki.db", self.repo))
@@ -938,63 +938,25 @@ class EndToEndTest(unittest.TestCase):
         self.assertIn("config load", doctor)
         self.assertIn("optional FastAPI", doctor)
 
-    def test_phase7_release_docs_and_verification_contract(self) -> None:
+    def test_public_docs_and_verification_contract(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
         readme = (project_root / "README.md").read_text(encoding="utf-8")
-        testing = (project_root / "docs" / "development" / "testing.md").read_text(
-            encoding="utf-8"
-        )
-        benchmark = (project_root / "docs" / "benchmarks" / "mvp-results.md").read_text(
-            encoding="utf-8"
-        )
-        retrieval_quality = (
-            project_root / "docs" / "benchmarks" / "retrieval-quality.md"
-        ).read_text(encoding="utf-8")
+        architecture = (project_root / "docs" / "architecture.md").read_text(encoding="utf-8")
+        benchmarks = (project_root / "docs" / "benchmarks.md").read_text(encoding="utf-8")
+        examples = (project_root / "docs" / "examples.md").read_text(encoding="utf-8")
         pyproject = (project_root / "pyproject.toml").read_text(encoding="utf-8")
 
-        self.assertIn('"dataset/graphrag-main"', pyproject)
-        self.assertIn("python3 -m pip install -e .", readme)
-        self.assertIn("python3 -m ruff check .", readme)
+        self.assertIn('name = "repo-wiki"', pyproject)
+        self.assertIn("local-first repository intelligence tool", readme)
+        self.assertIn("Status: experimental v0.1 / portfolio project.", readme)
         self.assertIn("python3 -m repo_wiki.interfaces.cli api serve", readme)
         self.assertIn("python3 -m repo_wiki.interfaces.cli mcp serve", readme)
-        self.assertIn("python3 -m repo_wiki.interfaces.cli benchmark report", readme)
-        self.assertIn("docs/benchmarks/retrieval-quality.md", readme)
-        self.assertIn("Release checks", testing)
-        self.assertIn("python -m compileall repo_wiki", testing)
-        self.assertIn("python -m ruff check .", testing)
-        self.assertIn("Retrieval Quality Suite", benchmark)
-        self.assertIn("Average latency", benchmark)
-        self.assertIn("Candidate Counts", benchmark)
-        self.assertIn("GraphRAG-style config validation", retrieval_quality)
-        self.assertIn("FastAPI config endpoint validation", retrieval_quality)
-        self.assertIn("Parser behavior and same-stem tests", retrieval_quality)
-
-    def test_phase8_release_docs_and_final_gate_are_recorded(self) -> None:
-        project_root = Path(__file__).resolve().parents[1]
-        readme = (project_root / "README.md").read_text(encoding="utf-8")
-        changelog = (project_root / "CHANGELOG.md").read_text(encoding="utf-8")
-        release = (project_root / "docs" / "release" / "v0.1.0.md").read_text(
-            encoding="utf-8"
-        )
-        mcp_setup = (project_root / "docs" / "usage" / "mcp-setup.md").read_text(
-            encoding="utf-8"
-        )
-        mcp_examples = (project_root / "docs" / "examples" / "mcp.md").read_text(
-            encoding="utf-8"
-        )
-        benchmark = (project_root / "docs" / "benchmarks" / "mvp-results.md").read_text(
-            encoding="utf-8"
-        )
-        progress = (project_root / "progress.md").read_text(encoding="utf-8")
-
-        self.assertIn("## v0.1.0", changelog)
-        self.assertIn("Release recommendation", release)
         self.assertIn("context_pack.v1", readme)
-        self.assertIn('"command": "repo-wiki"', mcp_setup)
-        self.assertIn('"schema_version": "context_pack.v1"', mcp_examples)
-        self.assertIn("Per-Category Quality", benchmark)
-        self.assertIn("[██████████] 100%", progress)
-        self.assertIn("Phase 9: Final Production Gate", progress)
+        self.assertIn("Retrieval Pipeline", architecture)
+        self.assertIn("Blind Holdout Retrieval Benchmark", benchmarks)
+        self.assertIn("Initial coding-agent A/B results were mixed", benchmarks)
+        self.assertIn('"command": "repo-wiki"', examples)
+        self.assertIn("retrieve_context", examples)
 
 def main_with_data_dir(data_dir: Path, argv: list[str]) -> int:
     old_data_dir = os.environ.get("REPO_WIKI_DATA_DIR")
