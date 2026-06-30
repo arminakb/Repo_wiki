@@ -1,4 +1,5 @@
-![Uploading ChatGPT Image Jun 23, 2026, 03_02_15 PM.png…]()
+<img width="1672" height="941" alt="ChatGPT Image Jun 23, 2026, 03_02_15 PM" src="https://github.com/user-attachments/assets/97e52e5e-42c8-4e67-a974-7ae4b38afb76" />
+
 # repo-wiki
 
 repo-wiki is a local-first repository intelligence tool that helps AI coding agents understand real codebases before editing them.
